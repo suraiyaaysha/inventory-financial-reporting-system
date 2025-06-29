@@ -24,24 +24,24 @@
                         </x-nav-link>
                     </li>
 
-                    {{-- <li>
+                    <li>
                         <x-nav-link  href="{{ route('sales') }}" :active="request()->routeIs('sales')">
 
                             <span class="iconify ml-0 h-6 w-6 shrink-0 text-gray-700 group-hover:text-green-600 
                                 @if (request()->routeIs('sales')) text-green-600 @endif" 
-                                data-icon="icon-park-solid:sale">
+                                data-icon="hugeicons:sale-tag-02">
                             </span>
 
                             {{ __('Sales') }}
                         </x-nav-link>
-                    </li> --}}
+                    </li>
 
                     {{-- <li>
                         <x-nav-link  href="{{ route('jurnal') }}" :active="request()->routeIs('jurnal')">
 
                             <span class="iconify ml-0 h-6 w-6 shrink-0 text-gray-700 group-hover:text-green-600 
                                 @if (request()->routeIs('jurnal')) text-green-600 @endif" 
-                                data-icon="ri:contacts-book-3-line">
+                                data-icon="iconoir:journal">
                             </span>
 
                             {{ __('Journal Entries') }}
@@ -53,7 +53,7 @@
 
                             <span class="iconify ml-0 h-6 w-6 shrink-0 text-gray-700 group-hover:text-green-600 
                                 @if (request()->routeIs('reports')) text-green-600 @endif" 
-                                data-icon="eos-icons:project-outlined">
+                                data-icon="mdi:report-pie">
                             </span>
 
                             {{ __('Financial Reports') }}

@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\Sales;
 use App\Livewire\Products;
 use Illuminate\Support\Facades\Route;
 
@@ -13,9 +14,9 @@ Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
 
+Route::middleware(['auth'])->group(function () {
+    Route::get('products', Products::class)->name('products');
+    Route::get('sales', Sales::class)->name('sales');
+});
 
-Route::get('products', Products::class)
-    ->middleware(['auth'])
-    ->name('products');
-
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

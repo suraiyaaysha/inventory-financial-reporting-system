@@ -13,4 +13,9 @@ class Product extends Model
         'stock',
         'opening_stock',
     ];
+
+    public function sales()
+    {
+        return $this->hasMany(Sale::class);
+    }
 }
