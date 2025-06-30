@@ -90,81 +90,123 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
                 </div>
-                <form wire:submit.prevent="saveSale" class="p-6 space-y-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Select Product</label>
-                        <select name="form.product_id" wire:model="form.product_id" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
-                            <option value="">Choose a product...</option>
-                            @foreach($products as $product)
-                                <option value="{{ $product->id }}">{{ $product->name }} - ৳{{ $product->sell_price }} (Stock: {{ $product->stock }})</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
-                            <input type="number" name="form.quantity" wire:model="form.quantity" min="1" :max="$products->find($form['product_id'])?->stock ?? 0" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required />
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Unit Price (৳)</label>
-                            <input type="text" :value="$products->find($form['product_id'])?->sell_price ? '৳' . $products->find($form['product_id'])->sell_price : ''" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50" disabled />
 
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Discount (৳)</label>
-                            <input type="number" name="form.discount" wire:model="form.discount" step="0.01" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">VAT Rate (%)</label>
-                            <input type="number" name="form.vat_rate" wire:model="form.vat_rate" step="0.01" min="0" max="100" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                        </div>
+                <form wire:submit.prevent="saveSale"
+                x-data="{
+                    products: @js($products->keyBy('id')),
+                    selectedProductId: @entangle('form.product_id'),
+                    quantity: @entangle('form.quantity'),
+                    // REMOVED .defer from discount, vat_rate, and paid_amount
+                    discount: @entangle('form.discount'),
+                    vat_rate: @entangle('form.vat_rate'),
+                    paid_amount: @entangle('form.paid_amount'),
+                    get product() {
+                        return this.products[this.selectedProductId] || { sell_price: 0, stock: 0 };
+                    },
+                    get subtotal() {
+                        return this.product.sell_price * this.quantity || 0;
+                    },
+                    get discountAmount() {
+                        return parseFloat(this.discount) || 0;
+                    },
+                    get afterDiscount() {
+                        return this.subtotal - this.discountAmount;
+                    },
+                    get vatAmount() {
+                        return this.afterDiscount * (parseFloat(this.vat_rate) || 0) / 100;
+                    },
+                    get total() {
+                        return this.afterDiscount + this.vatAmount;
+                    },
+                    get dueAmount() {
+                        return Math.max(0, this.total - (parseFloat(this.paid_amount) || 0));
+                    }
+                }"
+                class="p-6 space-y-6"
+                >
+                <!-- Product Select -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Select Product</label>
+                    <select x-model="selectedProductId" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+                        <option value="">Choose a product...</option>
+                        @foreach($products as $product)
+                            <option value="{{ $product->id }}">
+                                {{ $product->name }} - ৳{{ $product->sell_price }} (Stock: {{ $product->stock }})
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Quantity & Unit Price -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
+                        <input type="number" x-model="quantity" min="1" class="w-full px-3 py-2 border rounded-lg" required />
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Paid Amount (৳)</label>
-                        <input type="number" name="form.paid_amount" wire:model="form.paid_amount" step="0.01" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Unit Price (৳)</label>
+                        <input type="text" :value="`৳${product.sell_price}`" class="w-full px-3 py-2 border rounded-lg bg-gray-50" disabled />
                     </div>
-                    @if($form['product_id'] && $form['quantity'])
-                        <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                            <div class="flex items-center space-x-2 mb-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2a4 4 0 018 0v2m-4-4v4" /></svg>
-                                <h3 class="font-semibold text-blue-900">Sale Summary</h3>
+                </div>
+
+                <!-- Discount & VAT -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Discount (৳)</label>
+                        <input type="number" x-model="discount" step="0.01" min="0" class="w-full px-3 py-2 border rounded-lg" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">VAT Rate (%)</label>
+                        <input type="number" x-model="vat_rate" step="0.01" min="0" max="100" class="w-full px-3 py-2 border rounded-lg" />
+                    </div>
+                </div>
+
+                <!-- Paid Amount -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Paid Amount (৳)</label>
+                    <input type="number" x-model="paid_amount" step="0.01" min="0" class="w-full px-3 py-2 border rounded-lg" />
+                </div>
+
+                <!-- Summary Section -->
+                <template x-if="selectedProductId && quantity">
+                    <div class="summary-part bg-blue-50 rounded-lg p-4 border border-blue-200 mt-4">
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span>Subtotal:</span>
+                                <span class="font-medium">৳<span x-text="subtotal.toFixed(2)"></span></span>
                             </div>
-                            <div class="space-y-2 text-sm">
-                                <div class="flex justify-between">
-                                    <span class="text-gray-700">Subtotal:</span>
-                                    <span class="font-medium">৳{{ number_format($calculations['subtotal'], 2) }}</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-700">Discount:</span>
-                                    <span class="font-medium text-red-600">-৳{{ number_format($calculations['discount_amount'], 2) }}</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-700">VAT ({{ $form['vat_rate'] }}%):</span>
-                                    <span class="font-medium">৳{{ number_format($calculations['vat_amount'], 2) }}</span>
-                                </div>
-                                <hr class="my-2 border-blue-200" />
-                                <div class="flex justify-between text-lg font-semibold">
-                                    <span class="text-blue-900">Total:</span>
-                                    <span class="text-blue-900">৳{{ number_format($calculations['total'], 2) }}</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-700">Paid:</span>
-                                    <span class="font-medium text-green-600">৳{{ number_format($form['paid_amount'] ?? 0, 2) }}</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-700">Due:</span>
-                                    <span class="font-medium {{ $calculations['due_amount'] > 0 ? 'text-red-600' : 'text-green-600' }}">৳{{ number_format($calculations['due_amount'], 2) }}</span>
-                                </div>
+                            <div class="flex justify-between">
+                                <span>Discount:</span>
+                                <span class="text-red-600">-৳<span x-text="discountAmount.toFixed(2)"></span></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>VAT (<span x-text="vat_rate"></span>%):</span>
+                                <span>৳<span x-text="vatAmount.toFixed(2)"></span></span>
+                            </div>
+                            <hr class="my-2 border-blue-200" />
+                            <div class="flex justify-between text-lg font-semibold">
+                                <span>Total:</span>
+                                <span>৳<span x-text="total.toFixed(2)"></span></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Paid:</span>
+                                <span class="text-green-600">৳<span x-text="parseFloat(paid_amount || 0).toFixed(2)"></span></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Due:</span>
+                                <span :class="dueAmount > 0 ? 'text-red-600' : 'text-green-600'">৳<span x-text="dueAmount.toFixed(2)"></span></span>
                             </div>
                         </div>
-                    @endif
-                    <div class="flex space-x-4 pt-4">
-                        <button type="button" wire:click="$set('showModal', false)" class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">Cancel</button>
-                        <button type="submit" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors" :disabled="!$form['product_id'] || !$form['quantity']">Create Sale</button>
                     </div>
-                </form>
+                </template>
+
+                <!-- Buttons -->
+                <div class="flex space-x-4 pt-4">
+                    <button type="button" wire:click="$set('showModal', false)" class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">Cancel</button>
+                    <button type="submit" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Create Sale</button>
+                </div>
+            </form>
+            
             </div>
         </div>
     @endif

@@ -7,11 +7,15 @@ use App\Models\Sale;
 use App\Models\Product;
 use Carbon\Carbon;
 
+use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
+
 class Sales extends Component
 {
+
     public $sales;
     public $products;
     public $showModal = false;
+
     public $form = [
         'product_id' => '',
         'quantity' => '',
@@ -19,6 +23,7 @@ class Sales extends Component
         'vat_rate' => 5,
         'paid_amount' => '',
     ];
+
     public $calculations = [
         'unit_price' => 0,
         'subtotal' => 0,
@@ -42,20 +47,32 @@ class Sales extends Component
         $this->products = Product::where('stock', '>', 0)->get();
     }
 
-    public function updatedForm()
+    public function updated($propertyName)
+    {
+        if (str_starts_with($propertyName, 'form.')) {
+            $this->performCalculations();
+        }
+    }
+
+    private function performCalculations()
     {
         $product = $this->products->find($this->form['product_id']);
-        if ($product && $this->form['quantity']) {
+
+
+        if ($product && !empty($this->form['quantity'])) {
             $quantity = (int) $this->form['quantity'];
-            $discount = (float) $this->form['discount'];
-            $vatRate = (float) $this->form['vat_rate'];
-            $paidAmount = (float) $this->form['paid_amount'];
+            
+            $discount = (float) ($this->form['discount'] ?? 0);
+            $vatRate = (float) ($this->form['vat_rate'] ?? 0);
+            $paidAmount = (float) ($this->form['paid_amount'] ?? 0);
+
             $subtotal = $product->sell_price * $quantity;
-            $discountAmount = $discount;
+            $discountAmount = $discount; 
             $afterDiscount = $subtotal - $discountAmount;
             $vatAmount = ($afterDiscount * $vatRate) / 100;
             $total = $afterDiscount + $vatAmount;
             $dueAmount = max(0, $total - $paidAmount);
+
             $this->calculations = [
                 'unit_price' => $product->sell_price,
                 'subtotal' => $subtotal,
@@ -64,6 +81,9 @@ class Sales extends Component
                 'total' => $total,
                 'due_amount' => $dueAmount,
             ];
+        } else {
+            // Reset calculations
+            $this->resetCalculations();
         }
     }
 
@@ -76,29 +96,44 @@ class Sales extends Component
 
     public function saveSale()
     {
+        $this->performCalculations();
+
         $this->validate();
+
         $product = Product::findOrFail($this->form['product_id']);
         $quantity = (int) $this->form['quantity'];
+
+        // Update product stock
         $product->stock -= $quantity;
         $product->save();
+
+        // Create the sale record
         $sale = Sale::create([
             'product_id' => $product->id,
             'product_name' => $product->name,
             'quantity' => $quantity,
             'unit_price' => $product->sell_price,
-            'subtotal' => $this->calculations['subtotal'],
-            'discount' => $this->calculations['discount_amount'],
-            'vat_rate' => $this->form['vat_rate'],
-            'vat_amount' => $this->calculations['vat_amount'],
-            'total' => $this->calculations['total'],
-            'paid_amount' => $this->form['paid_amount'] ?? 0,
-            'due_amount' => $this->calculations['due_amount'],
+            'subtotal' => (float) $this->calculations['subtotal'],
+            'discount' => (float) $this->calculations['discount_amount'],
+            'vat_rate' => (float) $this->form['vat_rate'], 
+            'vat_amount' => (float) $this->calculations['vat_amount'],
+            'total' => (float) $this->calculations['total'],
+            'paid_amount' => (float) ($this->form['paid_amount'] ?? 0),
+            'due_amount' => (float) $this->calculations['due_amount'],
             'sale_date' => Carbon::now()->toDateString(),
         ]);
+
+        // Refresh data
         $this->sales = Sale::orderByDesc('id')->get();
         $this->products = Product::where('stock', '>', 0)->get();
+
+        // Close modal and reset form
         $this->showModal = false;
         $this->resetForm();
+
+        LivewireAlert::title('Sale successfully recorded!')
+        ->success()
+        ->show();
     }
 
     public function resetForm()
@@ -110,6 +145,11 @@ class Sales extends Component
             'vat_rate' => 5,
             'paid_amount' => '',
         ];
+        $this->resetCalculations();
+    }
+
+    private function resetCalculations()
+    {
         $this->calculations = [
             'unit_price' => 0,
             'subtotal' => 0,
@@ -125,4 +165,3 @@ class Sales extends Component
         return view('livewire.sales');
     }
 }
-
