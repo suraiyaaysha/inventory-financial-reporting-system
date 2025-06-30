@@ -64,7 +64,8 @@ php artisan migrate
 ### 5. Seed Default Admin (Optional)
 
 ```bash
-php artisan db:seed
+php artisan db:seed ofr
+php artisan migrate:fresh --seed
 ```
 
 ### 6. Start the Server
