@@ -3,15 +3,21 @@
     <div class="p-6">
         <h2 class="text-2xl font-bold mb-4">Financial Report</h2>
 
-        <div class="flex items-center gap-4 mb-6">
+        <div class="flex items-end gap-4 mb-6">
             <div>
                 <label for="fromDate" class="block text-sm font-medium text-gray-700">From Date</label>
-                <input type="date" id="fromDate" v:model="fromDate" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                <input type="date" id="fromDate" wire:model.defer="fromDate" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
             </div>
 
             <div>
                 <label for="toDate" class="block text-sm font-medium text-gray-700">To Date</label>
-                <input type="date" id="toDate" v:model="toDate" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                <input type="date" id="toDate" wire:model.defer="toDate" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+            </div>
+
+            <div>
+                <button wire:click="calculate" class="mt-5 inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700">
+                    Filter
+                </button>
             </div>
         </div>
 

@@ -22,16 +22,6 @@ class FinancialReports extends Component
         $this->calculate();
     }
 
-    public function updatedFromDate()
-    {
-        $this->calculate();
-    }
-
-    public function updatedToDate()
-    {
-        $this->calculate();
-    }
-
     public function calculate()
     {
         $sales = Sale::whereBetween('sale_date', [$this->fromDate, $this->toDate])->get();
