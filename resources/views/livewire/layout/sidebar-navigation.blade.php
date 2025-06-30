@@ -27,7 +27,7 @@
                     <li>
                         <x-nav-link  href="{{ route('sales') }}" :active="request()->routeIs('sales')">
 
-                            <span class="iconify ml-0 h-6 w-6 shrink-0 text-gray-700 group-hover:text-green-600 
+                            <span class="iconify mr-2 ml-0 h-6 w-6 shrink-0 text-gray-700 group-hover:text-green-600 
                                 @if (request()->routeIs('sales')) text-green-600 @endif" 
                                 data-icon="hugeicons:sale-tag-02">
                             </span>
@@ -36,17 +36,17 @@
                         </x-nav-link>
                     </li>
 
-                    {{-- <li>
-                        <x-nav-link  href="{{ route('jurnal') }}" :active="request()->routeIs('jurnal')">
+                    <li>
+                        <x-nav-link  href="{{ route('journal') }}" :active="request()->routeIs('journal')">
 
-                            <span class="iconify ml-0 h-6 w-6 shrink-0 text-gray-700 group-hover:text-green-600 
-                                @if (request()->routeIs('jurnal')) text-green-600 @endif" 
+                            <span class="iconify mr-2 ml-0 h-6 w-6 shrink-0 text-gray-700 group-hover:text-green-600 
+                                @if (request()->routeIs('journal')) text-green-600 @endif" 
                                 data-icon="iconoir:journal">
                             </span>
 
                             {{ __('Journal Entries') }}
                         </x-nav-link>
-                    </li> --}}
+                    </li>
 
                     {{-- <li>
                         <x-nav-link  href="{{ route('reports') }}" :active="request()->routeIs('reports')">
