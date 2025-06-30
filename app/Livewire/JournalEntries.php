@@ -5,7 +5,6 @@ namespace App\Livewire;
 use App\Models\Sale;
 use Livewire\Component;
 
-
 class JournalEntries extends Component
 {
     public $expandedSales = [];
@@ -19,9 +18,10 @@ class JournalEntries extends Component
         }
     }
 
+
     public function render()
     {
-        $sales = Sale::latest()->get();
+        $sales = Sale::latest()->with('product')->get();
 
         return view('livewire.journal-entries', compact('sales'));
     }
