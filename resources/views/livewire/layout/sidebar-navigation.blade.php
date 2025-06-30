@@ -48,17 +48,17 @@
                         </x-nav-link>
                     </li>
 
-                    {{-- <li>
+                    <li>
                         <x-nav-link  href="{{ route('reports') }}" :active="request()->routeIs('reports')">
 
-                            <span class="iconify ml-0 h-6 w-6 shrink-0 text-gray-700 group-hover:text-green-600 
+                            <span class="iconify mr-2 ml-0 h-6 w-6 shrink-0 text-gray-700 group-hover:text-green-600 
                                 @if (request()->routeIs('reports')) text-green-600 @endif" 
                                 data-icon="mdi:report-pie">
                             </span>
 
                             {{ __('Financial Reports') }}
                         </x-nav-link>
-                    </li> --}}
+                    </li>
 
                 </ul>
             </li>

@@ -20,7 +20,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('products', Products::class)->name('products');
     Route::get('sales', Sales::class)->name('sales');
     Route::get('journal', JournalEntries::class)->name('journal');
-    // Route::get('reports', FinancialReports::class)->name('reports');
+    Route::get('reports', FinancialReports::class)->name('reports');
 });
 
 require __DIR__ . '/auth.php';
