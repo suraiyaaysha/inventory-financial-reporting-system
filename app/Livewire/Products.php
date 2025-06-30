@@ -5,6 +5,8 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Product;
 
+use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
+
 class Products extends Component
 {
     public $products;
@@ -23,7 +25,7 @@ class Products extends Component
 
     public function mount()
     {
-        $this->products = Product::all();
+        $this->products = Product::latest()->get();
     }
 
     public function showAddModal()
@@ -70,6 +72,10 @@ class Products extends Component
         $this->products = Product::all();
         $this->showModal = false;
         $this->resetInputFields();
+
+        LivewireAlert::title('Product successfully recorded!')
+        ->success()
+        ->show();
     }
 
     public function resetInputFields()
