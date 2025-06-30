@@ -32,7 +32,6 @@ class FinancialReports extends Component
 
         $this->recentSales = Sale::whereBetween('sale_date', [$this->fromDate, $this->toDate])
             ->orderByDesc('sale_date')
-            ->take(5)
             ->get();
     }
 
