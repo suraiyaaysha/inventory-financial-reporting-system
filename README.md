@@ -1,6 +1,6 @@
 # Inventory & Financial Reporting System (Laravel 12 + Livewire 3 + Alpine.js, Tailwind.css)
 
-##### [Live Link](https://inventory.ayshatech.com/)
+### Live Link: (https://inventory.ayshatech.com/)
 
 This system is built using the TALL stack (Tailwind CSS, Alpine.js, Laravel, Livewire) along with Laravel Breeze for authentication. It includes:
 
