@@ -16,21 +16,21 @@ class ProductSeeder extends Seeder
         Product::create([
             'name' => 'Chair - Grid',
             'purchase_price' => 100.00,
-            'sell_price' => 150.00,
+            'sell_price' => 200.00,
             'stock' => 50,
             'opening_stock' => 50,
         ]);
         Product::create([
             'name' => 'Table - Grid',
             'purchase_price' => 100.00,
-            'sell_price' => 150.00,
+            'sell_price' => 200.00,
             'stock' => 50,
             'opening_stock' => 50,
         ]);
         Product::create([
             'name' => 'Battery',
             'purchase_price' => 100.00,
-            'sell_price' => 150.00,
+            'sell_price' => 200.00,
             'stock' => 50,
             'opening_stock' => 50,
         ]);
