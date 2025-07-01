@@ -2,7 +2,7 @@
     <div class="p-4 space-y-6">
         <h2 class="text-2xl font-bold mb-6">Journal Entries</h2>
 
-        @foreach($sales as $sale)
+        @forelse($sales as $sale)
             @php
                 $journalEntries = [];
 
@@ -80,7 +80,6 @@
                 $totalDebit = array_sum(array_column($journalEntries, 'debit'));
                 $totalCredit = array_sum(array_column($journalEntries, 'credit'));
             @endphp
-
 
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">
                 <div
@@ -162,7 +161,17 @@
                     </div>
                 @endif
             </div>
-        @endforeach
+        @empty
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center text-gray-500">
+                <p class="mb-4">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                    </svg>
+                </p>
+                <p class="text-lg font-semibold">No Journal Entries Found</p>
+                <p class="mt-2">It looks like there are no sales recorded yet to generate journal entries. Please add new sales to see them here.</p>
+            </div>
+        @endforelse
 
     </div>
 </div>
