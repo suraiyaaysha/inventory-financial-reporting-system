@@ -2,6 +2,8 @@
 
 ### Live Link: https://inventory.ayshatech.com/
 
+#### Video Overview: https://youtu.be/xpZd7zUMI3c?si=0EoLKJyJ677q5wgZ
+
 This system is built using the TALL stack (Tailwind CSS, Alpine.js, Laravel, Livewire) along with Laravel Breeze for authentication. It includes:
 
 -   Product Management
@@ -38,7 +40,7 @@ cd inventory-financial-reporting-system
 
 ```bash
 composer install
-npm install && npm run build
+npm install && npm run dev
 ```
 
 ### 3. Configure Environment
@@ -116,7 +118,7 @@ Default login (if seeded):
 -   Laravel 12
 -   Livewire 3
 -   Alpine.js 3
--   Tailwind CSS 3
+-   Tailwind CSS 4
 -   Breeze Auth (Livewire version)
 
 ---
