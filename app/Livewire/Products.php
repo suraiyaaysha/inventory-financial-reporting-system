@@ -69,7 +69,7 @@ class Products extends Component
                 'opening_stock' => $this->opening_stock,
             ]);
         }
-        $this->products = Product::all();
+        $this->products = Product::latest()->get();
         $this->showModal = false;
         $this->resetInputFields();
 
